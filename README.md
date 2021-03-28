@@ -27,15 +27,15 @@ This is a working example of deployment of a Flask app + Postgres db with [herok
 ## Add postgresql add-on to your Heroku app
 `$ heroku addons:create heroku-postgresql:hobby-dev --app <name-of-your-application>`
 
-Run `heroku config --app name_of_your_application` in order to check your configuration variables in Heroku.  
+Run `$ heroku config --app name_of_your_application` in order to check your configuration variables in Heroku.  
 You will see DATABASE_URL and the URL of the database you just created
 
 ## Push local project to Heroku
-`git push heroku master`
-if the previous command outputs an error, try `git push heroku HEAD:master`
+`$ git push heroku master`
+if the previous command outputs an error, try `$ git push heroku HEAD:master`
 
 ## Run Migrations in deployed app
 Once your app is deployed, run migrations by running:  
-`heroku run python manage.py db upgrade --app <name-of-your-application>`
+`$ heroku run python manage.py db upgrade --app <name-of-your-application>`
 
 ### url of deployed app can be found on settings section of app in the [heroku](https://dashboard.heroku.com) dashboard
