@@ -7,7 +7,7 @@ This is a working example of deployment of a Flask app + Postgres db with [herok
 1. Create a virtual environment
 2. Run `$ pip install -r requirements.txt`
 3. Create a Postgres database
-4. Add postgress url as an environment variable in `setup.sh`
+4. Add the `postgress url` as an environment variable in `setup.sh`
 5. Run `$ source setup.sh` to create env variable
 6. Run app locally `$ python app.py`
 
