@@ -3,9 +3,17 @@ from Udacity's Full Stack Nano Degree deployment section
 
 This is a working example of deployment of a Flask app + Postgres db with [heroku](https://dashboard.heroku.com)
 
-## Installation
+## Local Setup
+1. Create a virtual environment
+2. Run `$ pip install -r requirements.txt`
+3. Create a Postgres database
+4. Add postgress url as an environment variable in `setup.sh`
+5. Run `$ source setup.sh` to create env variable
+6. Run app locally `$ python app.py`
 
-`$ brew install heroku <name-of-heroku-app>`
+## Heroku Setup
+
+`$ heroku create <name-of-heroku-app>`
 
 ## Configure environment variables in [heroku](https://dashboard.heroku.com) dashboard
 
@@ -26,7 +34,7 @@ You will see DATABASE_URL and the URL of the database you just created
 `git push heroku master`
 if the previous command outputs an error, try `git push heroku HEAD:master`
 
-## Run Migrations
+## Run Migrations in deployed app
 Once your app is deployed, run migrations by running:  
 `heroku run python manage.py db upgrade --app <name-of-your-application>`
 
