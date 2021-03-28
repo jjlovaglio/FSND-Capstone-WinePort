@@ -24,6 +24,9 @@ This is a working example of deployment of a Flask app + Postgres db with [herok
 ## Add git remote for Heroku to your local repository
 `$ git remote add heroku <heroku-git-url>`
 
+you can use `git remote -v` to check which repos your local .git is aware of
+
+
 ## Add postgresql add-on to your Heroku app
 `$ heroku addons:create heroku-postgresql:hobby-dev --app <name-of-your-application>`
 
