@@ -1,4 +1,5 @@
 export DATABASE_URL="postgresql://localhost/fyyur-capstone"
+# export DATABASE_URL="postgresql://localhost/fsndcapstoneherokutest"
 export FLASK_APP=run
 export FLASK_ENV=development
 echo "Flask app set to: "$FLASK_APP

@@ -292,6 +292,6 @@ def populate_shows():
 # function execution
 # ----------------------------------------------------------------------------
 
-# populate_artists() # uncheck to populate
-# populate_venues() # uncheck to populate
-# populate_shows() # uncheck to populate.
+populate_artists() # uncheck to populate
+populate_venues() # uncheck to populate
+populate_shows() # uncheck to populate.
