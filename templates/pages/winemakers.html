@@ -1,11 +1,11 @@
 {% extends 'layouts/main.html' %}
-{% block title %}Fyyur | Winemakers{% endblock %}
+{% block title %}WinePort | Winemakers{% endblock %}
 {% block content %}
 <ul class="items">
 	{% for winemaker in winemakers %}
 	<li>
 		<a href="/winemaker/{{ winemaker.id }}">
-			<i class="fas fa-users"></i>
+			<i class="fas fa-user"></i>
 			<div class="item">
 				<h5>{{ winemaker.name }}</h5>
 			</div>

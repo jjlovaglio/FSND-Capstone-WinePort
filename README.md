@@ -1,11 +1,11 @@
-Fyyur
+WinePort
 -----
 
 ## Introduction
 
-Fyyur is a musical winery and winemaker booking site that facilitates the discovery and bookings of wines between local performing winemakers and wineries. This site lets you list new winemakers and wineries, discover them, and list wines with winemakers as a winery owner.
+WinePort is a winery and winemaker booking site that facilitates the discovery and bookings of wines between local performing winemakers and wineries. This site lets you list new winemakers and wineries, discover them, and list wines with winemakers as a winery owner.
 
-Your job is to build out the data models to power the API endpoints for the Fyyur site by connecting to a PostgreSQL database for storing, querying, and creating information about winemakers and wineries on Fyyur.
+Your job is to build out the data models to power the API endpoints for the WinePort site by connecting to a PostgreSQL database for storing, querying, and creating information about winemakers and wineries on WinePort.
 
 ## Overview
 
@@ -15,7 +15,7 @@ This app is nearly complete. It is only missing one thing… real data! While th
 * searching for wineries and winemakers.
 * learning more about a specific winemaker or winery.
 
-We want Fyyur to be the next new platform that winemakers and musical wineries can use to find each other, and discover new music wines. Let's make that happen!
+We want WinePort to be the next new platform that winemakers and  wineries can use to find each other, and discover new music wines. Let's make that happen!
 
 ## Tech Stack (Dependencies)
 
@@ -117,7 +117,7 @@ Acceptance Criteria
   * Past wines versus Upcoming wines should be distinguished in Winery and Winemaker pages.
   * A user should be able to click on the winery for an upcoming wine in the Winemaker's page, and on that Winery's page, see the same wine in the Winery Page's upcoming wines section.
 4. As a fellow developer on this application, I should be able to run `flask db migrate`, and have my local database (once set up and created) be populated with the right tables to run this application and have it interact with my local postgres server, serving the application's needs completely with real data I can seed my local database with.
-  * The models should be completed (see TODOs in the `Models` section of `app.py`) and model the objects used throughout Fyyur.
+  * The models should be completed (see TODOs in the `Models` section of `app.py`) and model the objects used throughout WinePort.
   * The right _type_ of relationship and parent-child dynamics between models should be accurately identified and fit the needs of this particular application.
   * The relationship between the models should be accurately configured, and referential integrity amongst the models should be preserved.
   * `flask db migrate` should work, and populate my local postgres database with properly configured tables for this application's objects, including proper columns, column data types, constraints, defaults, and relationships that completely satisfy the needs of this application. The proper type of relationship between wineries, winemakers, and wines should be configured.
@@ -130,7 +130,7 @@ Looking to go above and beyond? This is the right section for you! Here are some
 * Wine Recent Listed Winemakers and Recently Listed Wineries on the homepage, returning results for Winemakers and Wineries sorting by newly created. Limit to the 10 most recently listed items.
 * Implement Search Winemakers by City and State, and Search Wineries by City and State. Searching by "San Francisco, CA" should return all winemakers or wineries in San Francisco, CA.
 
-Best of luck in your final project! Fyyur depends on you!
+Best of luck in your final project! WinePort depends on you!
 
 
 ## Development Setup

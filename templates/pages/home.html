@@ -1,16 +1,16 @@
 {% extends 'layouts/main.html' %}
-{% block title %}Fyyur{% endblock %}
+{% block title %}WinePort{% endblock %}
 {% block content %}
 <div class="row">
 	<div class="col-sm-6">
-		<h1>Fyyur 🔥</h1>
-		<p class="lead">Where musical winemakers meet musical wineries.</p>
+		<h1>WinePort 🍇🍷</h1>
+		<p class="lead">Where winemakers meet wineries.</p>
 		<h3>
-			<a href="/wineries"><button class="btn btn-primary btn-lg">Find a winery</button></a>
+			<a href="/wineries"><button class="btn btn-danger btn-lg">Find a winery</button></a>
 			<a href="/wineries/create"><button class="btn btn-default btn-lg">Post a winery</button></a>
 		</h3>
 		<h3>
-			<a href="/winemakers"><button class="btn btn-primary btn-lg">Find an winemaker</button></a>
+			<a href="/winemakers"><button class="btn btn-danger btn-lg">Find a winemaker</button></a>
 			<a href="/winemakers/create"><button class="btn btn-default btn-lg">Post an winemaker</button></a>
 		</h3>
 		<p class="lead">Publicize about your wine for free.</p>
@@ -34,7 +34,7 @@
 		{% for winery in recent_wineries %}
 			<li>
 				<a href="/wineries/{{ winery.id }}">
-					<i class="fas fa-music"></i>
+					<i class="fas fa-warehouse"></i>
 					<div class="item">
 						<p>{{ winery.name }}</p>
 					</div>
@@ -50,7 +50,7 @@
 			{% for winemaker in recent_winemakers %}
 			<li>
 				<a href="/winemaker/{{ winemaker.id }}">
-					<i class="fas fa-users"></i>
+					<i class="fas fa-user"></i>
 					<div class="item">
 						<p>{{ winemaker.name }}</p>
 					</div>
