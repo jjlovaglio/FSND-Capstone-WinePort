@@ -10,12 +10,12 @@ def isValidPhone(form, field):
     if not re.search(r"^[0-9]{3}-[0-9]{3}-[0-9]{4}$", field.data) and len(field.data) > 10:
         raise ValidationError("Invalid phone number. Please use format: xxx-xxx-xxxx ")
 
-class ShowForm(FlaskForm):
-    artist_id = StringField(
-        'artist_id'
+class WineForm(FlaskForm):
+    winemaker_id = StringField(
+        'winemaker_id'
     )
-    venue_id = StringField(
-        'venue_id'
+    winery_id = StringField(
+        'winery_id'
     )
     start_time = DateTimeField(
         'start_time',
@@ -23,7 +23,7 @@ class ShowForm(FlaskForm):
         default= datetime.today()
     )
 
-class VenueForm(FlaskForm):
+class WineryForm(FlaskForm):
     name = StringField(
         'name', validators=[DataRequired()]
     )
@@ -133,7 +133,7 @@ class VenueForm(FlaskForm):
         'seeking_description'
     )
 
-class ArtistForm(FlaskForm):
+class WinemakerForm(FlaskForm):
     name = StringField(
         'name', validators=[DataRequired()]
     )
@@ -236,15 +236,15 @@ class ArtistForm(FlaskForm):
     website = StringField(
         'website'
     )
-    seeking_venue = BooleanField(
-        'seeking_venue'
+    seeking_winery = BooleanField(
+        'seeking_winery'
     )
     seeking_description = StringField(
         'seeking_description'
     )
 
 # TODO IMPLEMENT NEW ARTIST FORM AND NEW SHOW FORM - done
-class NewVenueForm(FlaskForm):
+class NewWineryForm(FlaskForm):
     name = StringField(
         'name', validators=[DataRequired()]
     )
@@ -354,7 +354,7 @@ class NewVenueForm(FlaskForm):
         'seeking_description'
     )
 
-class NewArtistForm(FlaskForm):
+class NewWinemakerForm(FlaskForm):
     name = StringField(
         'name', validators=[DataRequired()]
     )
@@ -457,8 +457,8 @@ class NewArtistForm(FlaskForm):
     website = StringField(
         'website'
     )
-    seeking_venue = BooleanField(
-        'seeking_venue'
+    seeking_winery = BooleanField(
+        'seeking_winery'
     )
     seeking_description = StringField(
         'seeking_description'
