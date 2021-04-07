@@ -1,0 +1,90 @@
+{% extends 'layouts/main.html' %}
+{% block title %}Winery Search{% endblock %}
+{% block content %}
+<div class="row">
+	<div class="col-sm-6">
+		<h1 class="monospace">
+			{{ winery.name }}
+		</h1>
+		<p class="subtitle">
+			ID: {{ winery.id }}
+		</p>
+		<div class="genres">
+
+			<span class="genre">{{ winery.genres }}</span>
+
+		</div>
+		<p>
+			<i class="fas fa-globe-americas"></i> {{ winery.city }}, {{ winery.state }}
+		</p>
+		<p>
+			<i class="fas fa-map-marker"></i> {% if winery.address %}{{ winery.address }}{% else %}No Address{% endif %}
+		</p>
+		<p>
+			<i class="fas fa-phone-alt"></i> {% if winery.phone %}{{ winery.phone }}{% else %}No Phone{% endif %}
+		</p>
+		<p>
+			<i class="fas fa-link"></i> {% if winery.website %}<a href="{{ winery.website }}" target="_blank">{{ winery.website }}</a>{% else %}No Website{% endif %}
+		</p>
+		<p>
+			<i class="fab fa-facebook-f"></i> {% if winery.facebook_link %}<a href="{{ winery.facebook_link }}" target="_blank">{{ winery.facebook_link }}</a>{% else %}No Facebook Link{% endif %}
+		</p>
+		{% if winery.seeking_talent %}
+		<div class="seeking">
+			<p class="lead">Currently seeking talent</p>
+			<div class="description">
+				<i class="fas fa-quote-left"></i> {{ winery.seeking_description }} <i class="fas fa-quote-right"></i>
+			</div>
+		</div>
+		{% else %}	
+		<p class="not-seeking">
+			<i class="fas fa-moon"></i> Not currently seeking talent
+		</p>
+		{% endif %}
+	</div>
+	<div class="col-sm-6">
+		<img src="{{ winery.image_link }}" alt="Winery Image" />
+	</div>
+</div>
+<section>
+	<form action="" method="post">
+		<input type="submit"
+			   value="Delete Winery"
+			   formmethod="POST"
+			   formaction="{{ url_for('delete_winery',
+			     winery_id=winery.id) }}">
+	</form>
+
+</section>
+<section>
+	<h2 class="monospace">{{ winery.upcoming_wines_count }} Upcoming {% if winery.upcoming_wines_count == 1 %}Wine{% else %}Wines{% endif %}</h2>
+	<div class="row">
+		{%for wine in winery.upcoming_wines %}
+		<div class="col-sm-4">
+			<div class="tile tile-wine">
+				<img src="{{ wine.winemaker_image_link }}" alt="Wine Winemaker Image" />
+				<h5><a href="/winemaker/{{ wine.winemaker_id }}">{{ wine.winemaker_name }}</a></h5>
+				<h6>{{ wine.start_time|datetime('full') }}</h6>
+			</div>
+		</div>
+		{% endfor %}
+	</div>
+</section>
+<section>
+	<h2 class="monospace">{{ winery.past_wines_count }} Past {% if winery.past_wines_count == 1 %}Wine{% else %}Wines{% endif %}</h2>
+	<div class="row">
+		{%for wine in winery.past_wines %}
+		<div class="col-sm-4">
+			<div class="tile tile-wine">
+				<img src="{{ wine.winemaker_image_link }}" alt="Wine Winemaker Image" />
+				<h5><a href="/winemaker/{{ wine.winemaker_id }}">{{ wine.winemaker_name }}</a></h5>
+				<h6>{{ wine.start_time|datetime('full') }}</h6>
+			</div>
+		</div>
+		{% endfor %}
+	</div>
+</section>
+
+
+{% endblock %}
+
