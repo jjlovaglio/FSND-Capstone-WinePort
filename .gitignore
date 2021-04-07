@@ -1,4 +1,3 @@
-# Github's python .gitignore boilerplate code -jjlovaglio
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]

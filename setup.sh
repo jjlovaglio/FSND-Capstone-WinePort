@@ -1,5 +1,8 @@
-export DATABASE_URL=postgresql://localhost/fsndcapstoneherokutest
-echo "DATABASE_URL: "$DATABASE_URL
+export DATABASE_URL="postgresql://localhost/fyyur-capstone"
+# export DATABASE_URL="postgresql://localhost/fsndcapstoneherokutest"
+export FLASK_APP=run
+export FLASK_ENV=development
+echo "Flask app set to: "$FLASK_APP
+echo "Environment mode set to: "$FLASK_ENV
 
-export EXCITED=true
-echo "EXCITED: "$EXCITED
+# run with $ source setup.sh
