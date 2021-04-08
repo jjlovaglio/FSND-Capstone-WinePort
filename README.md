@@ -3,29 +3,20 @@ WinePort
 
 ## Introduction
 
-WinePort is a winery and winemaker booking site that facilitates the discovery and bookings of wines between local performing winemakers and wineries. This site lets you list new winemakers and wineries, discover them, and list wines with winemakers as a winery owner.
+WinePort is a winery and winemaker booking site that facilitates the discovery and bookings of wines between local winemakers and wineries. This site lets you list new winemakers and wineries, discover them, and list wines with winemakers as a winery owner.
 
-Your job is to build out the data models to power the API endpoints for the WinePort site by connecting to a PostgreSQL database for storing, querying, and creating information about winemakers and wineries on WinePort.
-
-## Overview
-
-This app is nearly complete. It is only missing one thing… real data! While the views and controllers are defined in this application, it is missing models and model interactions to be able to store retrieve, and update data from a database. By the end of this project, you should have a fully functioning site that is at least capable of doing the following, if not more, using a PostgreSQL database:
-
-* creating new wineries, winemakers, and creating new wines.
-* searching for wineries and winemakers.
-* learning more about a specific winemaker or winery.
-
-We want WinePort to be the next new platform that winemakers and  wineries can use to find each other, and discover new music wines. Let's make that happen!
 
 ## Tech Stack (Dependencies)
 
 ### 1. Backend Dependencies
-Our tech stack will include the following:
- * **virtualenv** as a tool to create isolated Python environments
+
+* **virtualenv** as a tool to create isolated Python environments
  * **SQLAlchemy ORM** to be our ORM library of choice
  * **PostgreSQL** as our database of choice
  * **Python3** and **Flask** as our server language and server framework
  * **Flask-Migrate** for creating and running schema migrations
+
+
 You can download and install the dependencies mentioned above using `pip` as:
 ```
 pip install virtualenv
@@ -37,7 +28,7 @@ pip install Flask-Migrate
 > **Note** - If we do not mention the specific version of a package, then the default latest stable package will be installed. 
 
 ### 2. Frontend Dependencies
-You must have the **HTML**, **CSS**, and **Javascript** with [Bootstrap 3](https://getbootstrap.com/docs/3.4/customize/) for our website's frontend. Bootstrap can only be installed by Node Package Manager (NPM). Therefore, if not already, download and install the [Node.js](https://nodejs.org/en/download/). Windows users must run the executable as an Administrator, and restart the computer after installation. After successfully installing the Node, verify the installation as winen below.
+You must have the **HTML**, **CSS**, and **Javascript** with [Bootstrap 3](https://getbootstrap.com/docs/3.4/customize/) for the frontend. Bootstrap can only be installed by Node Package Manager (NPM). Therefore, if not already, download and install the [Node.js](https://nodejs.org/en/download/). Windows users must run the executable as an Administrator, and restart the computer after installation. After successfully installing the Node, verify the installation as below.
 ```
 node -v
 npm -v
@@ -73,109 +64,17 @@ npm install bootstrap@3
   ```
 
 Overall:
-* Models are located in the `MODELS` section of `app.py`.
-* Controllers are also located in `app.py`.
+* Models are located in the `MODELS` section of `run.py`.
+* Controllers are also located in `run.py`.
 * The web frontend is located in `templates/`, which builds static assets deployed to the web server at `static/`.
 * Web forms for creating data are located in `form.py`
 
 
 Highlight folders:
-* `templates/pages` -- (Already complete.) Defines the pages that are rendered to the site. These templates render views based on data passed into the template’s view, in the controllers defined in `app.py`. These pages successfully represent the data to the user, and are already defined for you.
-* `templates/layouts` -- (Already complete.) Defines the layout that a page can be contained in to define footer and header code for a given page.
-* `templates/forms` -- (Already complete.) Defines the forms used to create new winemakers, wines, and wineries.
-* `app.py` -- (Missing functionality.) Defines routes that match the user’s URL, and controllers which handle data and renders views to the user. This is the main file you will be working on to connect to and manipulate the database and render views with data to the user, based on the URL.
-* Models in `app.py` -- (Missing functionality.) Defines the data models that set up the database tables.
-* `config.py` -- (Missing functionality.) Stores configuration variables and instructions, separate from the main application code. This is where you will need to connect to the database.
-
-
-Instructions
------
-
-1. Understand the Project Structure (explained above) and where important files are located.
-2. Build and run local development following the Development Setup steps below.
-3. Fill in the missing functionality in this application: this application currently pulls in fake data, and needs to now connect to a real database and talk to a real backend.
-3. Fill out every `TODO` section throughout the codebase. We suggest going in order of the following:
-
-  1. Connect to a database in `config.py`. A project submission that uses a local database connection is fine.
-  2. Using SQLAlchemy, set up normalized models for the objects we support in our web app in the Models section of `app.py`. Check out the sample pages provided at /winemakers/1, /wineries/1, and /wines/1 for examples of the data we want to model, using all of the learned best practices in database schema design. Implement missing model properties and relationships using database migrations via Flask-Migrate.
-  3. Implement form submissions for creating new Wineries, Winemakers, and Wines. There should be proper constraints, powering the `/create` endpoints that serve the create form templates, to avoid duplicate or nonsensical form submissions. Submitting a form should create proper new records in the database.
-  4. Implement the controllers for listing wineries, winemakers, and wines. Note the structure of the mock data used. We want to keep the structure of the mock data.
-  5. Implement search, powering the `/search` endpoints that serve the application's search functionalities.
-  6. Serve winery and winemaker detail pages, powering the `<winery|winemaker>/<id>` endpoints that power the detail pages.
-
-
-Acceptance Criteria
------
-
-1. The web app should be successfully connected to a PostgreSQL database. A local connection to a database on your local computer is fine.
-2. There should be no use of mock data throughout the app. The data structure of the mock data per controller should be kept unmodified when satisfied by real data.
-3. The application should behave just as before with mock data, but now uses real data from a real backend server, with real search functionality. For example:
-  * when a user submits a new winemaker record, the user should be able to see it populate in /winemakers, as well as search for the winemaker by name and have the search return results.
-  * I should be able to go to the URL `/winemaker/<winemaker-id>` to visit a particular winemaker’s page using a unique ID per winemaker, and see real data about that particular winemaker.
-  * Wineries should continue to be displayed in groups by city and state.
-  * Search should be allowed to be partial string matching and case-insensitive.
-  * Past wines versus Upcoming wines should be distinguished in Winery and Winemaker pages.
-  * A user should be able to click on the winery for an upcoming wine in the Winemaker's page, and on that Winery's page, see the same wine in the Winery Page's upcoming wines section.
-4. As a fellow developer on this application, I should be able to run `flask db migrate`, and have my local database (once set up and created) be populated with the right tables to run this application and have it interact with my local postgres server, serving the application's needs completely with real data I can seed my local database with.
-  * The models should be completed (see TODOs in the `Models` section of `app.py`) and model the objects used throughout WinePort.
-  * The right _type_ of relationship and parent-child dynamics between models should be accurately identified and fit the needs of this particular application.
-  * The relationship between the models should be accurately configured, and referential integrity amongst the models should be preserved.
-  * `flask db migrate` should work, and populate my local postgres database with properly configured tables for this application's objects, including proper columns, column data types, constraints, defaults, and relationships that completely satisfy the needs of this application. The proper type of relationship between wineries, winemakers, and wines should be configured.
-
-##### Stand Out
-
-Looking to go above and beyond? This is the right section for you! Here are some challenges to make your submission stand out:
-
-*  Implement winemaker availability. An winemaker can list available times that they can be booked. Restrict wineries from being able to create wines with winemakers during a wine time that is outside of their availability.
-* Wine Recent Listed Winemakers and Recently Listed Wineries on the homepage, returning results for Winemakers and Wineries sorting by newly created. Limit to the 10 most recently listed items.
-* Implement Search Winemakers by City and State, and Search Wineries by City and State. Searching by "San Francisco, CA" should return all winemakers or wineries in San Francisco, CA.
-
-Best of luck in your final project! WinePort depends on you!
-
-
-## Development Setup
-1. **Download the project starter code locally**
-```
-git clone https://github.com/udacity/FSND.git
-cd FSND/projects/01_fyyur/starter_code 
-```
-
-2. **Create an empty repository in your Github account online. To change the remote repository path in your local repository, use the commands below:**
-```
-git remote -v 
-git remote remove origin 
-git remote add origin <https://github.com/<USERNAME>/<REPO_NAME>.git>
-git branch -M master
-```
-Once you have finished editing your code, you can push the local repository to your Github account using the following commands.
-```
-git add . --all   
-git commit -m "your comment"
-git push -u origin master
-```
-
-3. **Initialize and activate a virtualenv using:**
-```
-python -m virtualenv env
-source env/bin/activate
-```
->**Note** - In Windows, the `env` does not have a `bin` directory. Therefore, you'd use the analogous command winen below:
-```
-source env/Scripts/activate
-```
-
-4. **Install the dependencies:**
-```
-pip install -r requirements.txt
-```
-
-5. **Run the development server:**
-```
-export FLASK_APP=myapp
-export FLASK_ENV=development # enables debug mode
-python3 app.py
-```
-
-6. **Verify on the Browser**<br>
-Navigate to project homepage [http://127.0.0.1:5000/](http://127.0.0.1:5000/) or [http://localhost:5000](http://localhost:5000) 
+* `templates/pages` -- Defines the pages that are rendered to the site. These templates render views based on data passed into the template’s view, in the controllers defined in `app.py`. These pages successfully represent the data to the user.
+* `templates/layouts` -- Defines the layout that a page can be contained in to define footer and header code for a given page.
+* `templates/forms` -- Defines the forms used to create new winemakers, wines, and wineries.
+* `run.py` -- Defines routes that match the user’s URL, and controllers which handle data and renders views to the user. 
+* Models in `run.py` -- Defines the data models that set up the database tables.
+* `config.py` -- Stores configuration variables and instructions, separate from the main application code. 
 
