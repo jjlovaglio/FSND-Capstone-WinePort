@@ -282,8 +282,28 @@ def populate_wines():
 
 
 
-
-
+def populate_winery_2_after_delete_test_postman():
+    data = Winery(
+            id = wineries_data[1]["id"],
+            name = wineries_data[1]["name"],
+            genres = wineries_data[1]["genres"],
+            address = wineries_data[1]["address"],
+            city = wineries_data[1]["city"],
+            state = wineries_data[1]["state"],
+            phone = wineries_data[1]["phone"],
+            website = wineries_data[1]["website"],
+            facebook_link = wineries_data[1]["facebook_link"],
+            seeking_talent = wineries_data[1]["seeking_talent"],
+            # seeking_description = wineries_data[1]["seeking_description"],
+            image_link = wineries_data[1]["image_link"],
+            # past_wines = wineries_data[1]["past_wines"],
+            # upcoming_wines = wineries_data[1]["upcoming_wines"],
+            # past_wines_count = wineries_data[1]["past_wines_count"],
+            # upcoming_wines_count = wineries_data[1]["upcoming_wines_count"]
+        )
+    db.session.add(data)
+    db.session.commit()
+    print(f'added {wineries_data[1]["name"]} back to the database')
 
 
 
@@ -292,6 +312,8 @@ def populate_wines():
 # function execution
 # ----------------------------------------------------------------------------
 
-populate_winemakers() # uncheck to populate
-populate_wineries() # uncheck to populate
-populate_wines() # uncheck to populate.
+# populate_winemakers() # uncheck to populate
+# populate_wineries() # uncheck to populate
+# populate_wines() # uncheck to populate.
+
+populate_winery_2_after_delete_test_postman() # uncheck to add winery id=1 back to the database after postman DELETE endpoint testing

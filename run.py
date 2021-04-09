@@ -5,7 +5,7 @@
 import json
 import dateutil.parser
 import babel
-from flask import Flask, render_template, request, Response, flash, redirect, url_for
+from flask import Flask, render_template, request, Response, flash, redirect, url_for, abort, jsonify
 from flask_moment import Moment
 from flask_sqlalchemy import SQLAlchemy
 import logging
@@ -131,7 +131,6 @@ def index():
   recent_winemakers = Winemaker.query.order_by(Winemaker.id).limit(10).all()
 
   return render_template('pages/home.html', recent_wineries = recent_wineries, recent_winemakers = recent_winemakers)
-
 
 #  Wineries
 #  --------------------------------------------------------------------------#
@@ -376,7 +375,7 @@ def create_winery_submission():
       flash(message)
   return render_template('pages/home.html')
 
-@app.route('/wineries/<winery_id>/delete', methods=['POST'])
+@app.route('/wineries/<winery_id>/delete', methods=['DELETE', 'POST'])
 def delete_winery(winery_id):
   # TODO: Complete this endpoint for taking a winery_id, and using
   # SQLAlchemy ORM to delete a record. Handle cases where the session commit could fail.
@@ -762,7 +761,7 @@ def edit_winemaker(winemaker_id):
   # TODO: populate form with fields from winemaker with ID <winemaker_id> - done
   return render_template('forms/edit_winemaker.html', form=form, winemaker=winemaker)
 
-@app.route('/winemaker/<int:winemaker_id>/edit', methods=['POST'])
+@app.route('/winemaker/<int:winemaker_id>/edit', methods=['POST', 'PATCH'])
 def edit_winemaker_submission(winemaker_id):
   # TODO: take values from the form submitted, and update existing
   # winemaker record with ID <winemaker_id> using the new attributes - done
@@ -825,7 +824,7 @@ def edit_winery(winery_id):
   # TODO: populate form with values from winery with ID <winery_id> - done
   return render_template('forms/edit_winery.html', form=form, winery=winery)
 
-@app.route('/wineries/<int:winery_id>/edit', methods=['POST'])
+@app.route('/wineries/<int:winery_id>/edit', methods=['POST', 'PATCH'])
 def edit_winery_submission(winery_id):
   # TODO: take values from the form submitted, and update existing - done
   # winery record with ID <winery_id> using the new attributes - done
@@ -864,13 +863,55 @@ def edit_winery_submission(winery_id):
 
 #  Error Handlers
 #  --------------------------------------------------------------- 
+@app.errorhandler(400)
+def bad_request_error(error):
+    # optional error html display
+    # return render_template('errors/400.html'), 400
+    return jsonify({
+      "success": False,
+      "error": 400,
+      "message": "Bad Request error 400"
+    }), 400
+
+@app.errorhandler(401)
+def unauthorized_error(error):
+    # optional error html display
+    # return render_template('errors/401.html'), 401
+    return jsonify({
+      "success": False,
+      "error": 401,
+      "message": "Unauthorized error 401"
+    }), 401
+
+@app.errorhandler(403)
+def forbidden_error(error):
+    # optional error html display
+    # return render_template('errors/403.html'), 403
+    return jsonify({
+      "success": False,
+      "error": 403,
+      "message": "Forbidden error 403"
+    }), 403
+
 @app.errorhandler(404)
 def not_found_error(error):
-    return render_template('errors/404.html'), 404
+    # optional error html display
+    # return render_template('errors/404.html'), 404
+    return jsonify({
+      "success": False,
+      "error": 404,
+      "message": "Not found error 404"
+    }), 404
 
 @app.errorhandler(500)
-def server_error(error):
-    return render_template('errors/500.html'), 500
+def internal_server_error(error):
+    # optional error html display
+    # return render_template('errors/500.html'), 500
+    return jsonify({
+      "success": False,
+      "error": 500,
+      "message": "Internal server error 500"
+    }), 500
 
 
 if not app.debug:
