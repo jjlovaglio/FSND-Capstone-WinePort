@@ -1,0 +1,17 @@
+{% extends 'layouts/main.html' %}
+{% block title %}WinePort | Wines{% endblock %}
+{% block content %}
+<div class="row wines">
+    {%for wine in wines %}
+    <div class="col-sm-4">
+        <div class="tile tile-wine">
+            <img src="{{ wine.winemaker_image_link }}" alt="Winemaker Image" />
+            <h4>{{ wine.start_time|datetime('full') }}</h4>
+            <h5><a href="/winemakers/{{ wine.winemaker_id }}">{{ wine.winemaker_name }}</a></h5>
+            <p>playing at</p>
+            <h5><a href="/wineries/{{ wine.winery_id }}">{{ wine.winery_name }}</a></h5>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}

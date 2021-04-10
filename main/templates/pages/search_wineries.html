@@ -1,0 +1,17 @@
+{% extends 'layouts/main.html' %}
+{% block title %}WinePort | Wineries Search{% endblock %}
+{% block content %}
+<h3>Number of search results for "{{ search_term }}": {{ results.count }}</h3>
+<ul class="items">
+	{% for winery in results.data %}
+	<li>
+		<a href="/wineries/{{ winery.id }}">
+			<i class="fas fa-warehouse"></i>
+			<div class="item">
+				<h5>{{ winery.name }}</h5>
+			</div>
+		</a>
+	</li>
+	{% endfor %}
+</ul>
+{% endblock %}
