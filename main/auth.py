@@ -9,8 +9,8 @@ from main import app
 # app instance running in __init__.py
 # app = Flask(__name__)
 
-# AUTH0_DOMAIN = 'jjlovaglio.us.auth0.com'
-AUTH0_DOMAIN = os.environ['AUTH0_DOMAIN']
+AUTH0_DOMAIN = 'jjlovaglio.us.auth0.com'
+# AUTH0_DOMAIN = os.environ['AUTH0_DOMAIN']
 ALGORITHMS = ['RS256']
 API_AUDIENCE = 'wineport'
 
