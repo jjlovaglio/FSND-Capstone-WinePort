@@ -10,16 +10,23 @@ from main import app
 # app = Flask(__name__)
 
 AUTH0_DOMAIN = 'jjlovaglio.us.auth0.com'
-# AUTH0_DOMAIN = os.environ['AUTH0_DOMAIN']
 ALGORITHMS = ['RS256']
-API_AUDIENCE = 'wineport'
+AUTH0_API_AUDIENCE = 'wineport'
+AUTH0_CLIENT_ID = '6FDjYXzq4EsS2t5ZVCV7arEZuC0q0HPE'
+AUTH0_CALLBACK_URI = 'http://127.0.0.1:5000/login-results'
 
+
+# AUTH0_DOMAIN = os.environ['AUTH0_DOMAIN']
 
 class AuthError(Exception):
     def __init__(self, error, status_code):
         self.error = error
         self.status_code = status_code
 
+
+def auth0_url():
+    url = f'https://{AUTH0_DOMAIN}/authorize?audience={AUTH0_API_AUDIENCE}&response_type=token&client_id={AUTH0_CLIENT_ID}&redirect_uri={AUTH0_CALLBACK_URI}'
+    return url
 
 def get_token_auth_header():
     """Obtains the Access Token from the Authorization Header
@@ -80,7 +87,7 @@ def verify_decode_jwt(token):
                 token,
                 rsa_key,
                 algorithms=ALGORITHMS,
-                audience=API_AUDIENCE,
+                audience=AUTH0_API_AUDIENCE,
                 issuer='https://' + AUTH0_DOMAIN + '/'
             )
 

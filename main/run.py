@@ -16,7 +16,7 @@ from flask_migrate import Migrate
 import sys
 import itertools
 from main import app
-from main.auth import requires_auth
+from main.auth import requires_auth, auth0_url
 
 #----------------------------------------------------------------------------#
 # App Config.
@@ -130,11 +130,11 @@ def index():
   # Wine Recent Listed Winemakers and Recently Listed Wineries on the homepage, - done 
   # returning results for Winemakers and Wineries sorting by newly created. - done
   # Limit to the 10 most recently listed items. - done
-
+  url = auth0_url()
   recent_wineries = Winery.query.order_by(Winery.id).limit(10).all()
   recent_winemakers = Winemaker.query.order_by(Winemaker.id).limit(10).all()
 
-  return render_template('pages/home.html', recent_wineries = recent_wineries, recent_winemakers = recent_winemakers)
+  return render_template('pages/home.html', recent_wineries = recent_wineries, recent_winemakers = recent_winemakers, auth0_url = url)
 
 #  Wineries
 #  --------------------------------------------------------------------------#
