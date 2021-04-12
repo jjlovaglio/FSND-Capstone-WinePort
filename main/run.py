@@ -124,12 +124,20 @@ app.jinja_env.filters['datetime'] = format_datetime
 # Controllers.
 #----------------------------------------------------------------------------#
 
+# /callback route
+@app.route('/login-results')
+def callback_handling():
+  pass
+
 @app.route('/')
 def index():
   # Stand out
   # Wine Recent Listed Winemakers and Recently Listed Wineries on the homepage, - done 
   # returning results for Winemakers and Wineries sorting by newly created. - done
   # Limit to the 10 most recently listed items. - done
+  sting = request.args.get('access_token')
+  print(sting)
+
   url = auth0_url()
   recent_wineries = Winery.query.order_by(Winery.id).limit(10).all()
   recent_winemakers = Winemaker.query.order_by(Winemaker.id).limit(10).all()
@@ -333,11 +341,13 @@ def show_winery(winery_id):
 #  ----------------------------------------------------------------
 
 @app.route('/wineries/create', methods=['GET'])
+@requires_auth('post:winery')
 def create_winery_form():
   form = WineryForm()
   return render_template('forms/new_winery.html', form=form)
 
 @app.route('/wineries/create', methods=['POST'])
+@requires_auth('post:winery')
 def create_winery_submission():
   # TODO: insert form data as a new Winery record in the db, instead - done
   # TODO: modify data to be the data object returned from db insertion - done
@@ -380,6 +390,7 @@ def create_winery_submission():
   return render_template('pages/home.html')
 
 @app.route('/wineries/<winery_id>/delete', methods=['DELETE', 'POST'])
+@requires_auth('delete:winery')
 def delete_winery(winery_id):
   # TODO: Complete this endpoint for taking a winery_id, and using
   # SQLAlchemy ORM to delete a record. Handle cases where the session commit could fail.
@@ -581,11 +592,13 @@ def show_winemaker(winemaker_id):
 #  ----------------------------------------------------------------
 
 @app.route('/winemakers/create', methods=['GET'])
+@requires_auth('post:winemaker')
 def create_winemaker_form():
   form = WinemakerForm()
   return render_template('forms/new_winemaker.html', form=form)
 
 @app.route('/winemakers/create', methods=['POST'])
+@requires_auth('post:winemaker')
 def create_winemaker_submission():
   # called upon submitting the new winemaker listing form
   # TODO: insert form data as a new Winemaker record in the db, instead - done
@@ -692,12 +705,14 @@ def wines():
   return render_template('pages/wines.html', wines=data)
 
 @app.route('/wines/create')
+@requires_auth('post:wine')
 def create_wines():
   # renders form. do not touch.
   form = WineForm()
   return render_template('forms/new_wine.html', form=form)
 
 @app.route('/wines/create', methods=['POST'])
+@requires_auth('post:wine')
 def create_show_submission():
   # called to create new wines in the db, upon submitting new wine listing form - done
   # TODO: insert form data as a new Wine record in the db, instead - done
@@ -737,6 +752,7 @@ def create_show_submission():
 #  Update Wineries & Winemakers
 #  ----------------------------------------------------------------
 @app.route('/winemaker/<int:winemaker_id>/edit', methods=['GET'])
+@requires_auth('edit:winemaker')
 def edit_winemaker(winemaker_id):
   winemaker = Winemaker.query.get(winemaker_id)
   form = WinemakerForm(obj=winemaker)
@@ -766,6 +782,7 @@ def edit_winemaker(winemaker_id):
   return render_template('forms/edit_winemaker.html', form=form, winemaker=winemaker)
 
 @app.route('/winemaker/<int:winemaker_id>/edit', methods=['POST', 'PATCH'])
+@requires_auth('edit:winemaker')
 def edit_winemaker_submission(winemaker_id):
   # TODO: take values from the form submitted, and update existing
   # winemaker record with ID <winemaker_id> using the new attributes - done
@@ -795,6 +812,7 @@ def edit_winemaker_submission(winemaker_id):
   return redirect(url_for('show_winemaker', winemaker_id=winemaker_id))
 
 @app.route('/wineries/<int:winery_id>/edit', methods=['GET'])
+@requires_auth('edit:winery')
 def edit_winery(winery_id):
   winery = Winery.query.get(winery_id)
   form = WineryForm(obj=winery)
@@ -829,6 +847,7 @@ def edit_winery(winery_id):
   return render_template('forms/edit_winery.html', form=form, winery=winery)
 
 @app.route('/wineries/<int:winery_id>/edit', methods=['POST', 'PATCH'])
+@requires_auth('edit:winery')
 def edit_winery_submission(winery_id):
   # TODO: take values from the form submitted, and update existing - done
   # winery record with ID <winery_id> using the new attributes - done

@@ -13,7 +13,7 @@ AUTH0_DOMAIN = 'jjlovaglio.us.auth0.com'
 ALGORITHMS = ['RS256']
 AUTH0_API_AUDIENCE = 'wineport'
 AUTH0_CLIENT_ID = '6FDjYXzq4EsS2t5ZVCV7arEZuC0q0HPE'
-AUTH0_CALLBACK_URI = 'http://127.0.0.1:5000/login-results'
+AUTH0_CALLBACK_URI = 'http://127.0.0.1:5000/'
 
 
 # AUTH0_DOMAIN = os.environ['AUTH0_DOMAIN']
@@ -31,6 +31,7 @@ def auth0_url():
 def get_token_auth_header():
     """Obtains the Access Token from the Authorization Header
     """
+    import pdb;pdb.set_trace()
     auth = request.headers.get('Authorization', None)
     if not auth:
         raise AuthError({
@@ -115,24 +116,37 @@ def verify_decode_jwt(token):
             }, 400)
 
 
-def requires_auth(f):
-    @wraps(f)
-    def wrapper(*args, **kwargs):
-        token = get_token_auth_header()
-        try:
-            payload = verify_decode_jwt(token)
-        except:
-            abort(401)
-        return f(payload, *args, **kwargs)
+def check_permissions(permission, payload):
+    if 'permissions' not in payload:
+                        raise AuthError({
+                            'code': 'invalid_claims',
+                            'description': 'Permissions not included in JWT.'
+                        }, 400)
 
-    return wrapper
+    if permission not in payload['permissions']:
+        raise AuthError({
+            'code': 'unauthorized',
+            'description': 'Permission not found.'
+        }, 403)
+    return True
+
+def requires_auth(permission=''):
+    def requires_auth_decorator(f):
+        @wraps(f)
+        def wrapper(*args, **kwargs):
+            token = get_token_auth_header()
+            try:
+                payload = verify_decode_jwt(token)
+            except:
+                abort(401)
+
+            check_permissions(permission, payload)
+
+            return f(payload, *args, **kwargs)
+        return wrapper
+    return requires_auth_decorator
 
 
-@app.route('/headers')
-@requires_auth
-def headers(payload):
-    print(payload)
-    return 'Access Granted'
 
 if __name__ == '__main__':
     app.run()
