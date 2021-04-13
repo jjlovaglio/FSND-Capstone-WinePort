@@ -15,7 +15,6 @@ from forms import *
 from flask_migrate import Migrate
 import sys
 import itertools
-from main import app
 
 # Auth0 login flow imports
 from functools import wraps
@@ -33,13 +32,12 @@ from authlib.integrations.flask_client import OAuth
 from six.moves.urllib.parse import urlencode
 
 
-
 #----------------------------------------------------------------------------#
 # App Config.
 #----------------------------------------------------------------------------#
 
-# app instance running in __init__.py
-# app = Flask(__name__)
+
+app = Flask(__name__)
 moment = Moment(app)
 app.config.from_object('config')
 db = SQLAlchemy(app)
@@ -153,15 +151,40 @@ app.jinja_env.filters['datetime'] = format_datetime
 # Decorator @requires_auth
 #----------------------------------------------------------------------------#
 
-def requires_auth(f):
-  @wraps(f)
-  def decorated(*args, **kwargs):
-    if 'profile' not in session:
-      # Redirect to Login page here
-      return redirect('/')
-    return f(*args, **kwargs)
+class AuthError(Exception):
+    def __init__(self, error, status_code):
+        self.error = error
+        self.status_code = status_code
 
-  return decorated
+
+def check_permissions(permission, payload):
+    if 'permissions' not in payload:
+                        raise AuthError({
+                            'code': 'invalid_claims',
+                            'description': 'Permissions not included in JWT.'
+                        }, 400)
+
+    if permission not in payload['permissions']:
+        raise AuthError({
+            'code': 'unauthorized',
+            'description': 'Permission not found.'
+        }, 403)
+    return True
+
+
+def requires_auth(permission=''):
+  def requires_auth_decorator(f):
+    @wraps(f)
+    def decorated(*args, **kwargs):
+      if 'profile' not in session:
+        # Redirect to Login page here
+        return redirect('/login')
+
+      check_permissions(permission, payload)
+
+      return f(*args, **kwargs)
+    return decorated
+  return requires_auth_decorator
 
 
 #----------------------------------------------------------------------------#
@@ -204,7 +227,7 @@ def logout():
 
 
 @app.route('/dashboard')
-@requires_auth
+# @requires_auth
 def dashboard():
     return render_template('dashboard.html',
                            userinfo=session['profile'],
@@ -421,7 +444,7 @@ def show_winery(winery_id):
 #  ----------------------------------------------------------------
 
 @app.route('/wineries/create', methods=['GET'])
-# @requires_auth('post:winery')
+@requires_auth('post:winery')
 def create_winery_form():
   form = WineryForm()
   return render_template('forms/new_winery.html', form=form)
