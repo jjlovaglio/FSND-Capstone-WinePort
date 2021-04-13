@@ -178,6 +178,7 @@ def callback_handling():
     userinfo = resp.json()
 
     # Store the user information in flask session.
+    session['logged_in'] = True
     session['jwt_payload'] = userinfo
     session['profile'] = {
         'user_id': userinfo['sub'],
