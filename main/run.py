@@ -185,7 +185,8 @@ def callback_handling():
         'name': userinfo['name'],
         'picture': userinfo['picture']
     }
-    return render_template('pages/dashboard.html', userinfo=userinfo)
+    flash('You were successfully logged in.')
+    return render_template('pages/home.html', userinfo=userinfo)
 
 
 @app.route('/login')
