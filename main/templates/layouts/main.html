@@ -81,7 +81,7 @@
             <li {% if request.endpoint == 'wineries' %} class="active" {% endif %}><a href="{{ url_for('wineries') }}">Wineries</a></li>
             <li {% if request.endpoint == 'winemakers' %} class="active" {% endif %}><a href="{{ url_for('winemakers') }}">Winemakers</a></li>
             <li {% if request.endpoint == 'wines' %} class="active" {% endif %}><a href="{{ url_for('wines') }}">Wines</a></li>
-            <li><a href={{auth0_url}}>Login</a></li>
+            <li><a href="/login">Login</a></li>
           </ul>
         </div><!--/.nav-collapse -->
       </div>
