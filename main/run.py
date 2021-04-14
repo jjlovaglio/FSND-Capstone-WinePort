@@ -31,6 +31,13 @@ from flask import url_for
 from authlib.integrations.flask_client import OAuth
 from six.moves.urllib.parse import urlencode
 
+#basicFlaskAuth  imports
+import os
+from flask import Flask, request, abort
+import json
+from functools import wraps
+from jose import jwt
+from urllib.request import urlopen
 #----------------------------------------------------------------------------#
 # App Config.
 #----------------------------------------------------------------------------#
@@ -56,6 +63,10 @@ auth0 = oauth.register(
     },
 )
 
+# python-jose jwt decode algorithm & audience
+ALGORITHMS = ['RS256']
+API_AUDIENCE = 'wineport'
+AUTH0_DOMAIN = env['AUTH0_DOMAIN']
 
 #----------------------------------------------------------------------------#
 # Models.
@@ -130,8 +141,6 @@ class Wine(db.Model):
       start_time: {self.start_time} '''
 
 
-# TODO Implement Wine and Winemaker models, and complete all model relationships and properties, as a database migration. - done
-
 #----------------------------------------------------------------------------#
 # Filters.
 #----------------------------------------------------------------------------#
@@ -147,7 +156,7 @@ def format_datetime(value, format='medium'):
 app.jinja_env.filters['datetime'] = format_datetime
 
 #----------------------------------------------------------------------------#
-# Decorator @requires_auth
+# JWT decoding & permission checking functions
 #----------------------------------------------------------------------------#
 
 class AuthError(Exception):
@@ -187,7 +196,6 @@ def get_token_auth_header():
 
     token = parts[1]
     return token
-
 
 def verify_decode_jwt(token):
     jsonurl = urlopen(f'https://{AUTH0_DOMAIN}/.well-known/jwks.json')
@@ -256,19 +264,23 @@ def check_permissions(permission, payload):
         }, 403)
     return True
 
+#----------------------------------------------------------------------------#
+# Decorator @requires_auth
+#----------------------------------------------------------------------------#
+
 def requires_auth(permission=''):
   def requires_auth_decorator(f):
     @wraps(f)
     def decorated(*args, **kwargs):
       if 'profile' not in session:
-        # Redirect to Login page here
+        # Redirect to Login page 
         return redirect('/login')
       jwt = get_token_auth_header()
       try:
         payload = verify_decode_jwt(jwt)
-      except:
-        abort(401)
-        
+      except AuthError as err:
+        abort(401, err.error)
+
       check_permissions(permission, payload)
 
       return f(*args, **kwargs)
@@ -281,6 +293,23 @@ def requires_auth(permission=''):
 #----------------------------------------------------------------------------#
 
 # Auth0 login flow controllers
+
+@app.route("/authorization/url", methods=["GET"])
+def generate_auth_url():
+
+    domain = env['AUTH0_DOMAIN']
+    audience = env['AUTH0_JWT_API_AUDIENCE']
+    client = env['AUTH0_CLIENT_ID']
+    callback = env['AUTH0_CALLBACK_URL']
+    url = f'https://{domain}/authorize' \
+        f'?audience={audience}' \
+        f'&response_type=token&client_id=' \
+        f'{client}&redirect_uri=' \
+        f'{callback}'
+        
+    return jsonify({
+        'url': url
+    })
 
 @app.route('/login-results')
 def callback_handling():
@@ -300,11 +329,9 @@ def callback_handling():
     flash('You were successfully logged in.')
     return render_template('pages/home.html', userinfo=userinfo)
 
-
 @app.route('/login')
 def login():
     return auth0.authorize_redirect(redirect_uri='http://127.0.0.1:5000/login-results')
-
 
 @app.route('/logout')
 def logout():
@@ -315,22 +342,12 @@ def logout():
     return redirect(auth0.api_base_url + '/v2/logout?' + urlencode(params))
 
 
-@app.route('/dashboard')
-# @requires_auth
-def dashboard():
-    return render_template('dashboard.html',
-                           userinfo=session['profile'],
-                           userinfo_pretty=json.dumps(session['jwt_payload'], indent=4))
-
-
 # End Auth0 login flow controllers
 
 @app.route('/')
 def index():
-  # Stand out
-  # Wine Recent Listed Winemakers and Recently Listed Wineries on the homepage, - done 
-  # returning results for Winemakers and Wineries sorting by newly created. - done
-  # Limit to the 10 most recently listed items. - done
+  # Homepage, returns results for Winemakers and Wineries sorting by newly created
+
   recent_wineries = Winery.query.order_by(Winery.id).limit(10).all()
   recent_winemakers = Winemaker.query.order_by(Winemaker.id).limit(10).all()
 
@@ -539,7 +556,7 @@ def create_winery_form():
   return render_template('forms/new_winery.html', form=form)
 
 @app.route('/wineries/create', methods=['POST'])
-# @requires_auth('post:winery')
+@requires_auth('post:winery')
 def create_winery_submission():
   # TODO: insert form data as a new Winery record in the db, instead - done
   # TODO: modify data to be the data object returned from db insertion - done
