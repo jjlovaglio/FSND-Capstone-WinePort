@@ -38,10 +38,12 @@ import json
 from functools import wraps
 from jose import jwt
 from urllib.request import urlopen
+
+
+
 #----------------------------------------------------------------------------#
 # App Config.
 #----------------------------------------------------------------------------#
-
 
 app = Flask(__name__)
 moment = Moment(app)
@@ -141,6 +143,7 @@ class Wine(db.Model):
       start_time: {self.start_time} '''
 
 
+
 #----------------------------------------------------------------------------#
 # Filters.
 #----------------------------------------------------------------------------#
@@ -154,6 +157,8 @@ def format_datetime(value, format='medium'):
   return babel.dates.format_datetime(date, format)
 
 app.jinja_env.filters['datetime'] = format_datetime
+
+
 
 #----------------------------------------------------------------------------#
 # JWT decoding & permission checking functions
@@ -264,6 +269,8 @@ def check_permissions(permission, payload):
         }, 403)
     return True
 
+
+
 #----------------------------------------------------------------------------#
 # Decorator @requires_auth
 #----------------------------------------------------------------------------#
@@ -341,8 +348,8 @@ def logout():
     params = {'returnTo': url_for('index', _external=True), 'client_id': '6FDjYXzq4EsS2t5ZVCV7arEZuC0q0HPE'}
     return redirect(auth0.api_base_url + '/v2/logout?' + urlencode(params))
 
-
 # End Auth0 login flow controllers
+
 
 @app.route('/')
 def index():
@@ -352,6 +359,8 @@ def index():
   recent_winemakers = Winemaker.query.order_by(Winemaker.id).limit(10).all()
 
   return render_template('pages/home.html', recent_wineries = recent_wineries, recent_winemakers = recent_winemakers)
+
+
 
 #  Wineries
 #  --------------------------------------------------------------------------#
@@ -546,6 +555,8 @@ def show_winery(winery_id):
 
   return render_template('pages/show_winery.html', winery=data)
 
+
+
 #  Create Winery
 #  ----------------------------------------------------------------
 
@@ -625,6 +636,7 @@ def delete_winery(winery_id):
 
 #  Winemakers
 #  ----------------------------------------------------------------
+
 @app.route('/winemakers')
 def winemakers():
   # TODO: replace with real data returned from querying the database - done
@@ -640,8 +652,6 @@ def winemakers():
   #   "name": "The Wild Sax Band",
   # }]
   return render_template('pages/winemakers.html', winemakers=winemaker_query)
-
-
 
 @app.route('/winemakers/search', methods=['POST'])
 def search_winemakers():
@@ -797,6 +807,8 @@ def show_winemaker(winemaker_id):
   # old_data = list(filter(lambda d: d['id'] == winemaker_id, [data1, data2, data3]))[0]
   return render_template('pages/show_winemaker.html', winemaker=data)
 
+
+
 #  Create Winemaker
 #  ----------------------------------------------------------------
 
@@ -854,6 +866,7 @@ def create_winemaker_submission():
   # TODO: on unsuccessful db insert, flash an error instead. - done
   # e.g., flash('An error occurred. Winemaker ' + data.name + ' could not be listed.') - done
   return render_template('pages/home.html')
+
 
 
 #  Wines
@@ -958,8 +971,10 @@ def create_show_submission():
   return render_template('pages/home.html')
 
 
+
 #  Update Wineries & Winemakers
 #  ----------------------------------------------------------------
+
 @app.route('/winemaker/<int:winemaker_id>/edit', methods=['GET'])
 # @requires_auth('edit:winemaker')
 def edit_winemaker(winemaker_id):
@@ -1092,9 +1107,9 @@ def edit_winery_submission(winery_id):
 
 
 
-
 #  Error Handlers
 #  --------------------------------------------------------------- 
+
 @app.errorhandler(400)
 def bad_request_error(error):
     # optional error html display
@@ -1146,6 +1161,11 @@ def internal_server_error(error):
     }), 500
 
 
+
+#----------------------------------------------------------------------------#
+# Launch.
+#----------------------------------------------------------------------------#
+
 if not app.debug:
     file_handler = FileHandler('error.log')
     file_handler.setFormatter(
@@ -1156,9 +1176,6 @@ if not app.debug:
     app.logger.addHandler(file_handler)
     app.logger.info('errors')
 
-#----------------------------------------------------------------------------#
-# Launch.
-#----------------------------------------------------------------------------#
 
 # Default port:
 if __name__ == '__main__':
