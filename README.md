@@ -122,3 +122,5 @@ User 1 token: `eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6IjExcTh6NHhFay1zSjJ0W
 
 User 2 token:
 `eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6IjExcTh6NHhFay1zSjJ0WnpXa3A2aSJ9`
+
+You can check the token's content at [jwt.io](https://jwt.io/)

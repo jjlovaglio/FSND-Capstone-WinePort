@@ -1,74 +1,74 @@
-from run import db, Winery, Winemaker, Wine
+from main.run import db, Winery, Winemaker, Wine
 
 # Populating Winemakers
 # ------------------------------------------------------------------------------------------------------------------
 
 winemaker_data=[{
-    "id": 4,
-    "name": "Guns N Petals",
-    "genres": ["Rock n Roll"],
-    "city": "San Francisco",
-    "state": "CA",
-    "phone": "326-123-5000",
-    "website": "https://www.gunsnpetalsband.com",
-    "facebook_link": "https://www.facebook.com/GunsNPetals",
+    "id": 1,
+    "name": "José Lovaglio",
+    "genres": ["malbec","chardonnay","merlot"],
+    "city": "Lujan de Cuyo",
+    "state": "Mendoza",
+    "phone": "234592735",
+    "website": "http://www.joselovaglio.com",
+    "facebook_link": "http://www.facebook.com/jlovaglio",
     "seeking_winery": True,
-    "seeking_description": "Looking for wines to perform at in the San Francisco Bay Area!",
-    "image_link": "https://images.unsplash.com/photo-1549213783-8284d0336c4f?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=300&q=80",
+    "seeking_description": "Hi I'm a winemaker from Agrelo seeking for a winery to make my wines",
+    "image_link": "https://images.unsplash.com/flagged/photo-1595514191830-3e96a518989b?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=634&q=80",
     "past_wines": [{
       "winery_id": 1,
-      "winery_name": "The Musical Hop",
-      "winery_image_link": "https://images.unsplash.com/photo-1543900694-133f37abaaa5?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=400&q=60",
+      "winery_name": "Susana Balbo Wines",
+      "winery_image_link": "https://images.unsplash.com/photo-1572913017567-02f0649bc4fd?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=967&q=80",
       "start_time": "2019-05-21T21:30:00.000Z"
     }],
     "upcoming_wines": [],
     "past_wines_count": 1,
     "upcoming_wines_count": 0,
   }, {
-    "id": 5,
-    "name": "Matt Quevedo",
-    "genres": ["Jazz"],
-    "city": "New York",
-    "state": "NY",
-    "phone": "300-400-5000",
-    "facebook_link": "https://www.facebook.com/mattquevedo923251523",
+    "id": 2,
+    "name": "Gustavo Bertagna",
+    "genres": ["torrontes", "malbec", "chenin"],
+    "city": "Agrelo",
+    "state": "Mendoza",
+    "phone": "3004005000",
+    "facebook_link": "http://www.facebook.com/gbertagna",
     "seeking_winery": False,
-    "image_link": "https://images.unsplash.com/photo-1495223153807-b916f75de8c5?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=334&q=80",
+    "image_link": "https://images.unsplash.com/flagged/photo-1595514191830-3e96a518989b?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=634&q=80",
     "past_wines": [{
       "winery_id": 3,
-      "winery_name": "Park Square Live Music & Coffee",
-      "winery_image_link": "https://images.unsplash.com/photo-1485686531765-ba63b07845a7?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=747&q=80",
+      "winery_name": "Vaglio Wines",
+      "winery_image_link": "https://images.unsplash.com/photo-1573061750909-d2586d3fe8b8?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=1050&q=80",
       "start_time": "2019-06-15T23:00:00.000Z"
     }],
     "upcoming_wines": [],
     "past_wines_count": 1,
     "upcoming_wines_count": 0,
   }, {
-    "id": 6,
-    "name": "The Wild Sax Band",
-    "genres": ["Jazz", "Classical"],
-    "city": "San Francisco",
-    "state": "CA",
-    "phone": "432-325-5432",
-    "facebook_link": "https://www.facebook.com/thewildsaxband",
+    "id": 3,
+    "name": "David Bonomi",
+    "genres": ["malbec", "cabernet franc"],
+    "city": "Tupungato",
+    "state": "Mendoza",
+    "phone": "4323255432",
+    "facebook_link": "http://www.facebook.com/dbonomi",
     "seeking_winery": False,
-    "image_link": "https://images.unsplash.com/photo-1558369981-f9ca78462e61?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=794&q=80",
+    "image_link": "https://images.unsplash.com/photo-1598226863630-2826f1d31532?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=1534&q=80",
     "past_wines": [],
     "upcoming_wines": [{
       "winery_id": 3,
-      "winery_name": "Park Square Live Music & Coffee",
-      "winery_image_link": "https://images.unsplash.com/photo-1485686531765-ba63b07845a7?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=747&q=80",
-      "start_time": "2035-04-01T20:00:00.000Z"
+      "winery_name": "Vaglio Wines",
+      "winery_image_link": "https://images.unsplash.com/photo-1573061750909-d2586d3fe8b8?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=1050&q=80",
+      "start_time": "2019-06-15T23:00:00.000Z"
     }, {
       "winery_id": 3,
-      "winery_name": "Park Square Live Music & Coffee",
-      "winery_image_link": "https://images.unsplash.com/photo-1485686531765-ba63b07845a7?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=747&q=80",
-      "start_time": "2035-04-08T20:00:00.000Z"
+      "winery_name": "Vaglio Wines",
+      "winery_image_link": "https://images.unsplash.com/photo-1573061750909-d2586d3fe8b8?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=1050&q=80",
+      "start_time": "2019-06-15T23:00:00.000Z"
     }, {
       "winery_id": 3,
-      "winery_name": "Park Square Live Music & Coffee",
-      "winery_image_link": "https://images.unsplash.com/photo-1485686531765-ba63b07845a7?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=747&q=80",
-      "start_time": "2035-04-15T20:00:00.000Z"
+      "winery_name": "Vaglio Wines",
+      "winery_image_link": "https://images.unsplash.com/photo-1573061750909-d2586d3fe8b8?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=1050&q=80",
+      "start_time": "2019-06-15T23:00:00.000Z"
     }],
     "past_wines_count": 0,
     "upcoming_wines_count": 3,
@@ -312,8 +312,8 @@ def populate_winery_2_after_delete_test_postman():
 # function execution
 # ----------------------------------------------------------------------------
 
-# populate_winemakers() # uncheck to populate
+populate_winemakers() # uncheck to populate
 # populate_wineries() # uncheck to populate
 # populate_wines() # uncheck to populate.
 
-populate_winery_2_after_delete_test_postman() # uncheck to add winery id=1 back to the database after postman DELETE endpoint testing
+# populate_winery_2_after_delete_test_postman() # uncheck to add winery id=1 back to the database after postman DELETE endpoint testing
