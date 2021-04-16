@@ -15,7 +15,7 @@ echo "Auth0 client ID set to: "$AUTH0_CLIENT_ID
 # export DATABASE_URL="postgresql://localhost/fsndcapstoneherokutest"
 export DATABASE_URL="postgresql://localhost/db_populate_v1"
 echo "Local Database URL set to:"$DATABASE_URL
-export FLASK_APP="main/run.py"
+export FLASK_APP="run.py"
 echo "Flask app set to: "$FLASK_APP
 export FLASK_ENV=development
 echo "Environment mode set to: "$FLASK_ENV
