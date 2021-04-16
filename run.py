@@ -15,6 +15,32 @@ from forms import *
 from flask_migrate import Migrate
 import sys
 import itertools
+
+# Auth0 login flow imports
+from functools import wraps
+import json
+from os import environ as env
+from werkzeug.exceptions import HTTPException
+from dotenv import load_dotenv, find_dotenv
+from flask import Flask
+from flask import jsonify
+from flask import redirect
+from flask import render_template
+from flask import session
+from flask import url_for
+from authlib.integrations.flask_client import OAuth
+from six.moves.urllib.parse import urlencode
+
+#basicFlaskAuth  imports
+import os
+from flask import Flask, request, abort
+import json
+from functools import wraps
+from jose import jwt
+from urllib.request import urlopen
+
+
+
 #----------------------------------------------------------------------------#
 # App Config.
 #----------------------------------------------------------------------------#
@@ -25,7 +51,24 @@ app.config.from_object('config')
 db = SQLAlchemy(app)
 migrate = Migrate(app, db)
 
-# TODO: connect to a local postgresql database - done
+# Auth0 login flow app config
+oauth = OAuth(app)
+auth0 = oauth.register(
+    'auth0',
+    client_id='6FDjYXzq4EsS2t5ZVCV7arEZuC0q0HPE',
+    client_secret= env.get('AUTH0_CLIENT_SECRET'),
+    api_base_url='https://jjlovaglio.us.auth0.com',
+    access_token_url='https://jjlovaglio.us.auth0.com/oauth/token',
+    authorize_url='https://jjlovaglio.us.auth0.com/authorize',
+    client_kwargs={
+        'scope': 'openid profile email',
+    },
+)
+
+# python-jose jwt decode algorithm & audience
+ALGORITHMS = ['RS256']
+API_AUDIENCE = 'wineport'
+AUTH0_DOMAIN = env['AUTH0_DOMAIN']
 
 #----------------------------------------------------------------------------#
 # Models.
@@ -39,9 +82,9 @@ class Winery(db.Model):
     city = db.Column(db.String(120))
     state = db.Column(db.String(120))
     address = db.Column(db.String(120))
-    phone = db.Column(db.String(120), unique=True)
+    phone = db.Column(db.String(120))
     genres = db.Column(db.String(120))
-    facebook_link = db.Column(db.String(120), unique=True)
+    facebook_link = db.Column(db.String(120))
     image_link = db.Column(db.String(500))
     website = db.Column(db.String(120))
     seeking_talent = db.Column(db.Boolean, default=False)
@@ -68,7 +111,7 @@ class Winemaker(db.Model):
     phone = db.Column(db.String(120))
     genres = db.Column(db.String(120))
     image_link = db.Column(db.String(500))
-    facebook_link = db.Column(db.String(120), nullable=True, unique=True)
+    facebook_link = db.Column(db.String(120), nullable=True)
     website = db.Column(db.String(120))
     seeking_winery = db.Column(db.Boolean, default=False)
     seeking_description = db.Column(db.String(300))
@@ -100,7 +143,6 @@ class Wine(db.Model):
       start_time: {self.start_time} '''
 
 
-# TODO Implement Wine and Winemaker models, and complete all model relationships and properties, as a database migration. - done
 
 #----------------------------------------------------------------------------#
 # Filters.
@@ -116,21 +158,209 @@ def format_datetime(value, format='medium'):
 
 app.jinja_env.filters['datetime'] = format_datetime
 
+
+
+#----------------------------------------------------------------------------#
+# JWT decoding & permission checking functions
+#----------------------------------------------------------------------------#
+
+class AuthError(Exception):
+    def __init__(self, error, status_code):
+        self.error = error
+        self.status_code = status_code
+
+
+def get_token_auth_header():
+    """Obtains the Access Token from the Authorization Header
+    """
+    auth = request.headers.get('Authorization', None)
+    if not auth:
+        raise AuthError({
+            'code': 'authorization_header_missing',
+            'description': 'Authorization header is expected.'
+        }, 401)
+
+    parts = auth.split()
+    if parts[0].lower() != 'bearer':
+        raise AuthError({
+            'code': 'invalid_header',
+            'description': 'Authorization header must start with "Bearer".'
+        }, 401)
+
+    elif len(parts) == 1:
+        raise AuthError({
+            'code': 'invalid_header',
+            'description': 'Token not found.'
+        }, 401)
+
+    elif len(parts) > 2:
+        raise AuthError({
+            'code': 'invalid_header',
+            'description': 'Authorization header must be bearer token.'
+        }, 401)
+
+    token = parts[1]
+    return token
+
+def verify_decode_jwt(token):
+    jsonurl = urlopen(f'https://{AUTH0_DOMAIN}/.well-known/jwks.json')
+    jwks = json.loads(jsonurl.read())
+    unverified_header = jwt.get_unverified_header(token)
+    rsa_key = {}
+    if 'kid' not in unverified_header:
+        raise AuthError({
+            'code': 'invalid_header',
+            'description': 'Authorization malformed.'
+        }, 401)
+
+    for key in jwks['keys']:
+        if key['kid'] == unverified_header['kid']:
+            rsa_key = {
+                'kty': key['kty'],
+                'kid': key['kid'],
+                'use': key['use'],
+                'n': key['n'],
+                'e': key['e']
+            }
+    if rsa_key:
+        try:
+            payload = jwt.decode(
+                token,
+                rsa_key,
+                algorithms=ALGORITHMS,
+                audience=API_AUDIENCE,
+                issuer='https://' + AUTH0_DOMAIN + '/'
+            )
+
+            return payload
+
+        except jwt.ExpiredSignatureError:
+            raise AuthError({
+                'code': 'token_expired',
+                'description': 'Token expired.'
+            }, 401)
+
+        except jwt.JWTClaimsError:
+            raise AuthError({
+                'code': 'invalid_claims',
+                'description': 'Incorrect claims. Please, check the audience and issuer.'
+            }, 401)
+        except Exception:
+            raise AuthError({
+                'code': 'invalid_header',
+                'description': 'Unable to parse authentication token.'
+            }, 400)
+    raise AuthError({
+                'code': 'invalid_header',
+                'description': 'Unable to find the appropriate key.'
+            }, 400)
+
+def check_permissions(permission, payload):
+    if 'permissions' not in payload:
+                        raise AuthError({
+                            'code': 'invalid_claims',
+                            'description': 'Permissions not included in JWT.'
+                        }, 400)
+
+    if permission not in payload['permissions']:
+        raise AuthError({
+            'code': 'unauthorized',
+            'description': 'Permission not found.'
+        }, 403)
+    return True
+
+
+
+#----------------------------------------------------------------------------#
+# Decorator @requires_auth
+#----------------------------------------------------------------------------#
+
+def requires_auth(permission=''):
+  def requires_auth_decorator(f):
+    @wraps(f)
+    def decorated(*args, **kwargs):
+      if 'profile' not in session:
+        # Redirect to Login page 
+        return redirect('/login')
+      jwt = get_token_auth_header()
+      try:
+        payload = verify_decode_jwt(jwt)
+      except AuthError as err:
+        abort(401, err.error)
+
+      check_permissions(permission, payload)
+
+      return f(*args, **kwargs)
+    return decorated
+  return requires_auth_decorator
+
+
 #----------------------------------------------------------------------------#
 # Controllers.
 #----------------------------------------------------------------------------#
 
+# Auth0 login flow controllers
+
+@app.route("/authorization/url", methods=["GET"])
+def generate_auth_url():
+
+    domain = env['AUTH0_DOMAIN']
+    audience = env['AUTH0_JWT_API_AUDIENCE']
+    client = env['AUTH0_CLIENT_ID']
+    callback = env['AUTH0_CALLBACK_URL']
+    url = f'https://{domain}/authorize' \
+        f'?audience={audience}' \
+        f'&response_type=token&client_id=' \
+        f'{client}&redirect_uri=' \
+        f'{callback}'
+        
+    return jsonify({
+        'url': url
+    })
+
+@app.route('/login-results')
+def callback_handling():
+    # Handles response from token endpoint
+    auth0.authorize_access_token()
+    resp = auth0.get('userinfo')
+    userinfo = resp.json()
+
+    # Store the user information in flask session.
+    session['logged_in'] = True
+    session['jwt_payload'] = userinfo
+    session['profile'] = {
+        'user_id': userinfo['sub'],
+        'name': userinfo['name'],
+        'picture': userinfo['picture']
+    }
+    flash('You were successfully logged in.')
+    return render_template('pages/home.html', userinfo=userinfo)
+
+@app.route('/login')
+def login():
+    return auth0.authorize_redirect(redirect_uri='http://127.0.0.1:5000/login-results')
+
+@app.route('/logout')
+def logout():
+    # Clear session stored data
+    session.clear()
+    # Redirect user to logout endpoint
+    params = {'returnTo': url_for('index', _external=True), 'client_id': '6FDjYXzq4EsS2t5ZVCV7arEZuC0q0HPE'}
+    return redirect(auth0.api_base_url + '/v2/logout?' + urlencode(params))
+
+# End Auth0 login flow controllers
+
+
 @app.route('/')
 def index():
-  # Stand out
-  # Wine Recent Listed Winemakers and Recently Listed Wineries on the homepage, - done 
-  # returning results for Winemakers and Wineries sorting by newly created. - done
-  # Limit to the 10 most recently listed items. - done
+  # Homepage, returns results for Winemakers and Wineries sorting by newly created
 
   recent_wineries = Winery.query.order_by(Winery.id).limit(10).all()
   recent_winemakers = Winemaker.query.order_by(Winemaker.id).limit(10).all()
 
   return render_template('pages/home.html', recent_wineries = recent_wineries, recent_winemakers = recent_winemakers)
+
+
 
 #  Wineries
 #  --------------------------------------------------------------------------#
@@ -325,15 +555,19 @@ def show_winery(winery_id):
 
   return render_template('pages/show_winery.html', winery=data)
 
+
+
 #  Create Winery
 #  ----------------------------------------------------------------
 
 @app.route('/wineries/create', methods=['GET'])
+@requires_auth('post:winery')
 def create_winery_form():
   form = WineryForm()
   return render_template('forms/new_winery.html', form=form)
 
 @app.route('/wineries/create', methods=['POST'])
+@requires_auth('post:winery')
 def create_winery_submission():
   # TODO: insert form data as a new Winery record in the db, instead - done
   # TODO: modify data to be the data object returned from db insertion - done
@@ -376,6 +610,7 @@ def create_winery_submission():
   return render_template('pages/home.html')
 
 @app.route('/wineries/<winery_id>/delete', methods=['DELETE', 'POST'])
+@requires_auth('delete:winery')
 def delete_winery(winery_id):
   # TODO: Complete this endpoint for taking a winery_id, and using
   # SQLAlchemy ORM to delete a record. Handle cases where the session commit could fail.
@@ -401,6 +636,7 @@ def delete_winery(winery_id):
 
 #  Winemakers
 #  ----------------------------------------------------------------
+
 @app.route('/winemakers')
 def winemakers():
   # TODO: replace with real data returned from querying the database - done
@@ -416,8 +652,6 @@ def winemakers():
   #   "name": "The Wild Sax Band",
   # }]
   return render_template('pages/winemakers.html', winemakers=winemaker_query)
-
-
 
 @app.route('/winemakers/search', methods=['POST'])
 def search_winemakers():
@@ -573,15 +807,19 @@ def show_winemaker(winemaker_id):
   # old_data = list(filter(lambda d: d['id'] == winemaker_id, [data1, data2, data3]))[0]
   return render_template('pages/show_winemaker.html', winemaker=data)
 
+
+
 #  Create Winemaker
 #  ----------------------------------------------------------------
 
 @app.route('/winemakers/create', methods=['GET'])
+@requires_auth('post:winemaker')
 def create_winemaker_form():
   form = WinemakerForm()
   return render_template('forms/new_winemaker.html', form=form)
 
 @app.route('/winemakers/create', methods=['POST'])
+@requires_auth('post:winemaker')
 def create_winemaker_submission():
   # called upon submitting the new winemaker listing form
   # TODO: insert form data as a new Winemaker record in the db, instead - done
@@ -628,6 +866,7 @@ def create_winemaker_submission():
   # TODO: on unsuccessful db insert, flash an error instead. - done
   # e.g., flash('An error occurred. Winemaker ' + data.name + ' could not be listed.') - done
   return render_template('pages/home.html')
+
 
 
 #  Wines
@@ -688,12 +927,14 @@ def wines():
   return render_template('pages/wines.html', wines=data)
 
 @app.route('/wines/create')
+@requires_auth('post:wine')
 def create_wines():
   # renders form. do not touch.
   form = WineForm()
   return render_template('forms/new_wine.html', form=form)
 
 @app.route('/wines/create', methods=['POST'])
+@requires_auth('post:wine')
 def create_show_submission():
   # called to create new wines in the db, upon submitting new wine listing form - done
   # TODO: insert form data as a new Wine record in the db, instead - done
@@ -730,9 +971,12 @@ def create_show_submission():
   return render_template('pages/home.html')
 
 
+
 #  Update Wineries & Winemakers
 #  ----------------------------------------------------------------
+
 @app.route('/winemaker/<int:winemaker_id>/edit', methods=['GET'])
+@requires_auth('edit:winemaker')
 def edit_winemaker(winemaker_id):
   winemaker = Winemaker.query.get(winemaker_id)
   form = WinemakerForm(obj=winemaker)
@@ -762,6 +1006,7 @@ def edit_winemaker(winemaker_id):
   return render_template('forms/edit_winemaker.html', form=form, winemaker=winemaker)
 
 @app.route('/winemaker/<int:winemaker_id>/edit', methods=['POST', 'PATCH'])
+@requires_auth('edit:winemaker')
 def edit_winemaker_submission(winemaker_id):
   # TODO: take values from the form submitted, and update existing
   # winemaker record with ID <winemaker_id> using the new attributes - done
@@ -791,6 +1036,7 @@ def edit_winemaker_submission(winemaker_id):
   return redirect(url_for('show_winemaker', winemaker_id=winemaker_id))
 
 @app.route('/wineries/<int:winery_id>/edit', methods=['GET'])
+@requires_auth('edit:winery')
 def edit_winery(winery_id):
   winery = Winery.query.get(winery_id)
   form = WineryForm(obj=winery)
@@ -825,6 +1071,7 @@ def edit_winery(winery_id):
   return render_template('forms/edit_winery.html', form=form, winery=winery)
 
 @app.route('/wineries/<int:winery_id>/edit', methods=['POST', 'PATCH'])
+@requires_auth('edit:winery')
 def edit_winery_submission(winery_id):
   # TODO: take values from the form submitted, and update existing - done
   # winery record with ID <winery_id> using the new attributes - done
@@ -860,9 +1107,9 @@ def edit_winery_submission(winery_id):
 
 
 
-
 #  Error Handlers
 #  --------------------------------------------------------------- 
+
 @app.errorhandler(400)
 def bad_request_error(error):
     # optional error html display
@@ -914,6 +1161,11 @@ def internal_server_error(error):
     }), 500
 
 
+
+#----------------------------------------------------------------------------#
+# Launch.
+#----------------------------------------------------------------------------#
+
 if not app.debug:
     file_handler = FileHandler('error.log')
     file_handler.setFormatter(
@@ -924,9 +1176,6 @@ if not app.debug:
     app.logger.addHandler(file_handler)
     app.logger.info('errors')
 
-#----------------------------------------------------------------------------#
-# Launch.
-#----------------------------------------------------------------------------#
 
 # Default port:
 if __name__ == '__main__':
