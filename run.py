@@ -47,7 +47,8 @@ from urllib.request import urlopen
 
 app = Flask(__name__)
 moment = Moment(app)
-app.config.from_object('config')
+app.config.from_object(env['APP_SETTINGS'])
+print(env['APP_SETTINGS'])
 db = SQLAlchemy(app)
 migrate = Migrate(app, db)
 

@@ -1,4 +1,7 @@
-
+# set env to Development
+# export APP_SETTINGS="config.DevelopmentConfig"
+export APP_SETTINGS="config.TestingConfig"
+echo "APP_SETTINGS set to: "$APP_SETTINGS
 # The Auth0 callback url
 export AUTH0_CALLBACK_URL="http://127.0.0.1:5000/callback-url"
 echo "Auth0 callback url set to: "$AUTH0_CALLBACK_URL
