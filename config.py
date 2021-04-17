@@ -1,9 +1,6 @@
 import os
 basedir = os.path.abspath(os.path.dirname(__file__))
 
-# Connect to the database
-database_path = os.environ['DATABASE_URL']
-
 class Config(object):
     DEBUG = False
     TESTING = False
