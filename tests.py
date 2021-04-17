@@ -1,8 +1,7 @@
 import unittest
 import json
-from flaskr import create_app
 from models import setup_db
-
+from run import app
 
 
 class ResourceTestCase(unittest.TestCase):
@@ -10,10 +9,10 @@ class ResourceTestCase(unittest.TestCase):
 
     def setUp(self):
         """Define test variables and initialize app."""
-        self.app = create_app()
+        self.app = app
         self.client = self.app.test_client
-        self.database_name = "test_db"
-        self.database_path = "postgres://{}/{}".format('localhost:5432', self.database_name)
+        self.database_name = "wineport_test_db"
+        self.database_path = "postgresql://{}/{}".format('localhost', self.database_name)
         setup_db(self.app, self.database_path)
     
     def tearDown(self):
