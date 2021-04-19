@@ -32,7 +32,7 @@ class DevelopmentConfig(Config):
 class TestingConfig(Config):
     TESTING = True
     SQLALCHEMY_DATABASE_URI = "postgresql://localhost/wineport_test_db"
-
+    DEBUG = False
 
 
 

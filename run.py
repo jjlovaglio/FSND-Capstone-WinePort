@@ -206,9 +206,9 @@ def requires_auth(permission=''):
   def requires_auth_decorator(f):
     @wraps(f)
     def decorated(*args, **kwargs):
-      if 'profile' not in session:
-        # Redirect to Login page 
-        return redirect('/login')
+      # if 'profile' not in session:
+      #   # Redirect to Login page 
+      #   return redirect('/login')
       jwt = get_token_auth_header()
       try:
         payload = verify_decode_jwt(jwt)
@@ -226,8 +226,6 @@ def requires_auth(permission=''):
 # Controllers.
 #----------------------------------------------------------------------------#
 
-# Auth0 login flow controllers
-
 @app.route("/authorization/url", methods=["GET"])
 def generate_auth_url():
 
@@ -241,10 +239,25 @@ def generate_auth_url():
         f'{client}&redirect_uri=' \
         f'{callback}'
         
-    return jsonify({
-        'url': url
-    })
+    # return jsonify({
+    #     'url': url
+    # })
+    return redirect(url)
 
+# begin javascript hack to retrieve url anchor
+@app.route('/callback-url', methods=['GET'])
+def app_response_code():
+    return '''  <script type="text/javascript">
+                var token = window.location.href.split("access_token=")[1]; 
+                window.location = "/app_response_token/" + token;
+            </script> '''
+@app.route('/app_response_token/<token>/', methods=['GET'])
+def app_response_token(token):
+    print(token)
+    return token
+# end javascript hack to retrieve url anchor
+
+# Auth0 login flow controllers
 @app.route('/login-results')
 def callback_handling():
     # Handles response from token endpoint
@@ -294,8 +307,7 @@ def index():
 
 @app.route('/wineries')
 def wineries():
-  # TODO: replace with real wineries data. - done
-  #       num_wines should be aggregated based on number of upcoming wines per winery. - done
+
   current_time = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
   winery_query = Winery.query.group_by(Winery.id, Winery.state, Winery.city).all()
   city_and_state = ''
