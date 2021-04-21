@@ -1,1 +1,0 @@
-dropdb wineport_test_db && createdb wineport_test_db

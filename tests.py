@@ -15,7 +15,7 @@ class WinePortTestCase(unittest.TestCase):
     def setUp(self):
         """Define test variables and initialize app."""
         self.token1 = env["USER_1_TOKEN"]
-
+        self.token2 = env["USER_2_TOKEN"]
         self.app = app
         self.client = self.app.test_client
         self.database_name = "wineport_test_db"
@@ -33,18 +33,42 @@ class WinePortTestCase(unittest.TestCase):
         """Executed after each test"""
         pass
 
+
+
     # begin RBAC tests
-    def test_Winemaker_Role_has_all_permissions(self):
+    def test_Winemaker_Role_succeeds_accessing_create_wine_form(self):
+        """ Token 2 is authorized to access the create_wine_form: Http 200
+        """
+        headers = {
+            "Authorization": self.token2
+        }
+        res = self.client().get('/wines/create', headers=headers)
+        self.assertEqual(res.status_code, 200)
+
+    def test_Winemaker_Role_fails_to_create_a_winery_403(self):
+        """ Token 2 is unauthorized to create a winery. Error 403, permission not found
+        """
+        headers = {
+            "Authorization": self.token2
+        }
+        res = self.client().get('/wineries/create', headers=headers)
+        self.assertEqual(res.status_code, 403)
+
+    def test_Manager_Role_fails_to_have_a_header_401(self):
+        """ Token 1 doesn't have a header token: HTTP 401 authorization header is expected
+        """
+        res = self.client().get('/wineries/create')
+        # print(res.data.decode('utf-8'))
+        self.assertEqual(res.status_code, 401)
+
+    def test_Manager_Role_has_all_permissions(self):
         """ If token 1 is current, assert success 200
         """
         headers = {
             "Authorization": self.token1
         }
-        res = self.client().get('/')
-    
-    def test_Manager_Role_has_all_permissions(self):
-        pass
-
+        res = self.client().get('/wines/create', headers=headers)
+        self.assertEqual(res.status_code, 200)
     # end RBAC tests
     def test_index_success_200(self):
         """Test index endpoint for success"""

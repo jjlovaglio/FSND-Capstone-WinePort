@@ -1049,6 +1049,13 @@ def edit_winery_submission(winery_id):
 #  Error Handlers
 #  --------------------------------------------------------------- 
 
+@app.errorhandler(AuthError)
+def handle_auth_error(e):
+  return jsonify({
+    "error": e.error,
+    "status_code": e.status_code
+  }), e.status_code
+
 @app.errorhandler(400)
 def bad_request_error(error):
     # optional error html display
