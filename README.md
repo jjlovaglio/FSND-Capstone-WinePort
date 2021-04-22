@@ -81,7 +81,7 @@ pip install -r requirements.txt
 ```
 psql createdb <database_name> && psql createdb <test_database_name>
 ```
-4. Connect the databases to the project by updating DATABASE_PATH and TEST_DATABASE_PATH variables in `setup.sh`
+4. Connect the databases to the project by updating DATABASE_URL and TEST_DATABASE_URL variables in `setup.sh`
 5. Add environment variables to bash session
 ```
 source setup.sh

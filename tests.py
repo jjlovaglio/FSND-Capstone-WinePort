@@ -18,7 +18,7 @@ class WinePortTestCase(unittest.TestCase):
         self.token2 = env["USER_2_TOKEN"]
         self.app = app
         self.client = self.app.test_client
-        self.database_path = env["TEST_DATABASE_PATH"]
+        self.database_path = env["TEST_DATABASE_URL"]
         setup_db(self.app, self.database_path)
         
         # binds the app to the current context
