@@ -50,4 +50,4 @@ wrapt==1.11.1
 python-dotenv
 requests
 authlib
-six
+
