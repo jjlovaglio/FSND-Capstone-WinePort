@@ -8,8 +8,8 @@ class Config(object):
     SECRET_KEY = 'this-really-needs-to-be-changed'
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     SQLALCHEMY_BINDS = {
-    'dev_db': 'postgresql://localhost/wineport_dev_db',
-    'test_db':'postgresql://localhost/wineport_test_db'
+    'dev_db': os.environ['DATABASE_PATH'],
+    'test_db':os.environ['TEST_DATABASE_PATH']
 }
 
 
@@ -25,13 +25,13 @@ class StagingConfig(Config):
 class DevelopmentConfig(Config):
     DEVELOPMENT = True
     DEBUG = True
-    SQLALCHEMY_DATABASE_URI = "postgresql://localhost/wineport_dev_db"
+    SQLALCHEMY_DATABASE_URI = os.environ['DATABASE_PATH']
 
 
 
 class TestingConfig(Config):
     TESTING = True
-    SQLALCHEMY_DATABASE_URI = "postgresql://localhost/wineport_test_db"
+    SQLALCHEMY_DATABASE_URI = os.environ['TEST_DATABASE_PATH']
     DEBUG = False
 
 
