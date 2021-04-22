@@ -7,7 +7,6 @@ import dateutil.parser
 import babel
 from flask import Flask, render_template, request, Response, flash, redirect, url_for, abort, jsonify
 from flask_moment import Moment
-from flask_sqlalchemy import SQLAlchemy
 import logging
 from logging import Formatter, FileHandler
 from flask_wtf import form
@@ -39,6 +38,7 @@ from functools import wraps
 from jose import jwt
 from urllib.request import urlopen
 
+from models import db, Winemaker, Wine, Winery
 
 
 #----------------------------------------------------------------------------#
@@ -47,8 +47,9 @@ from urllib.request import urlopen
 
 app = Flask(__name__)
 moment = Moment(app)
-app.config.from_object('config')
-db = SQLAlchemy(app)
+app.config.from_object(env['APP_SETTINGS'])
+print(env['APP_SETTINGS'])
+db.init_app(app)
 migrate = Migrate(app, db)
 
 # Auth0 login flow app config
@@ -69,80 +70,6 @@ auth0 = oauth.register(
 ALGORITHMS = ['RS256']
 API_AUDIENCE = 'wineport'
 AUTH0_DOMAIN = env['AUTH0_DOMAIN']
-
-#----------------------------------------------------------------------------#
-# Models.
-#----------------------------------------------------------------------------#
-
-class Winery(db.Model):
-    __tablename__ = 'winery'
-
-    id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String, unique=True)
-    city = db.Column(db.String(120))
-    state = db.Column(db.String(120))
-    address = db.Column(db.String(120))
-    phone = db.Column(db.String(120))
-    genres = db.Column(db.String(120))
-    facebook_link = db.Column(db.String(120))
-    image_link = db.Column(db.String(500))
-    website = db.Column(db.String(120))
-    seeking_talent = db.Column(db.Boolean, default=False)
-    seeking_description = db.Column(db.String(300))
-    wines = db.relationship('Wine', backref='winery', lazy='dynamic')
-
-    def __repr__(self):
-      return f'''< winery 
-                        id: {self.id},
-                      name: {self.name},
-                      city: {self.city},
-                     state: {self.state} >'''
-
-    # TODO: implement any missing fields, as a database migration using Flask-Migrate - done
-
-class Winemaker(db.Model):
-    __tablename__ = 'winemaker'
-
-    id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String, unique=True)
-    city = db.Column(db.String(120))
-    state = db.Column(db.String(120))
-    address = db.Column(db.String(120))
-    phone = db.Column(db.String(120))
-    genres = db.Column(db.String(120))
-    image_link = db.Column(db.String(500))
-    facebook_link = db.Column(db.String(120), nullable=True)
-    website = db.Column(db.String(120))
-    seeking_winery = db.Column(db.Boolean, default=False)
-    seeking_description = db.Column(db.String(300))
-    wines = db.relationship('Wine', backref='winemaker', lazy='dynamic')
-
-    def __repr__(self):
-      return f'''< winemaker 
-               id: {self.id},
-             name: {self.name},
-             city: {self.city},
-            state: {self.state}>'''
-
-    # TODO: implement any missing fields, as a database migration using Flask-Migrate - done
-
-class Wine(db.Model):
-    __tablename__ = 'wines'
-    id = db.Column(db.Integer, primary_key=True)
-    winery_id = db.Column(db.Integer, db.ForeignKey(
-        'winery.id'), nullable=False)
-    winemaker_id = db.Column(db.Integer, db.ForeignKey(
-        'winemaker.id'), nullable=False)
-    start_time = db.Column(db.DateTime(), nullable=False)
-
-    def __repr__(self):
-      return f'''\n
-            Wine: {self.id} 
-           Winery: {self.winery.name} 
-          Winemaker: {self.winemaker.name}
-      start_time: {self.start_time} '''
-
-
 
 #----------------------------------------------------------------------------#
 # Filters.
@@ -279,9 +206,9 @@ def requires_auth(permission=''):
   def requires_auth_decorator(f):
     @wraps(f)
     def decorated(*args, **kwargs):
-      if 'profile' not in session:
-        # Redirect to Login page 
-        return redirect('/login')
+      # if 'profile' not in session:
+      #   # Redirect to Login page 
+      #   return redirect('/login')
       jwt = get_token_auth_header()
       try:
         payload = verify_decode_jwt(jwt)
@@ -299,8 +226,6 @@ def requires_auth(permission=''):
 # Controllers.
 #----------------------------------------------------------------------------#
 
-# Auth0 login flow controllers
-
 @app.route("/authorization/url", methods=["GET"])
 def generate_auth_url():
 
@@ -314,10 +239,25 @@ def generate_auth_url():
         f'{client}&redirect_uri=' \
         f'{callback}'
         
-    return jsonify({
-        'url': url
-    })
+    # return jsonify({
+    #     'url': url
+    # })
+    return redirect(url)
 
+# begin javascript hack to retrieve url anchor
+@app.route('/callback-url', methods=['GET'])
+def app_response_code():
+    return '''  <script type="text/javascript">
+                var token = window.location.href.split("access_token=")[1]; 
+                window.location = "/app_response_token/" + token;
+            </script> '''
+@app.route('/app_response_token/<token>/', methods=['GET'])
+def app_response_token(token):
+    print(token)
+    return token
+# end javascript hack to retrieve url anchor
+
+# Auth0 login flow controllers
 @app.route('/login-results')
 def callback_handling():
     # Handles response from token endpoint
@@ -367,8 +307,7 @@ def index():
 
 @app.route('/wineries')
 def wineries():
-  # TODO: replace with real wineries data. - done
-  #       num_wines should be aggregated based on number of upcoming wines per winery. - done
+
   current_time = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
   winery_query = Winery.query.group_by(Winery.id, Winery.state, Winery.city).all()
   city_and_state = ''
@@ -1109,6 +1048,13 @@ def edit_winery_submission(winery_id):
 
 #  Error Handlers
 #  --------------------------------------------------------------- 
+
+@app.errorhandler(AuthError)
+def handle_auth_error(e):
+  return jsonify({
+    "error": e.error,
+    "status_code": e.status_code
+  }), e.status_code
 
 @app.errorhandler(400)
 def bad_request_error(error):

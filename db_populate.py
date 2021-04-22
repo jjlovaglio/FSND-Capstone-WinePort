@@ -1,4 +1,4 @@
-from main.run import db, Winery, Winemaker, Wine
+from run import db, Winery, Winemaker, Wine
 
 # Populating Winemakers
 # ------------------------------------------------------------------------------------------------------------------
@@ -291,8 +291,8 @@ def populate_winery_2_after_delete_test_postman():
 # function execution
 # ----------------------------------------------------------------------------
 
-# populate_winemakers() # uncheck to populate
-# populate_wineries() # uncheck to populate
+populate_winemakers() # uncheck to populate
+populate_wineries() # uncheck to populate
 populate_wines() # uncheck to populate.
 
 # populate_winery_2_after_delete_test_postman() # uncheck to add winery id=1 back to the database after postman DELETE endpoint testing
