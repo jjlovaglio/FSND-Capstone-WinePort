@@ -11,8 +11,9 @@ echo "USER_1_TOKEN: "$USER_1_TOKEN
 export USER_2_TOKEN="Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6IjExcTh6NHhFay1zSjJ0WnpXa3A2aSJ9.eyJpc3MiOiJodHRwczovL2pqbG92YWdsaW8udXMuYXV0aDAuY29tLyIsInN1YiI6ImF1dGgwfDYwMmE3YzZhNWVhZTg2MDA2OGU0MjUwYyIsImF1ZCI6IndpbmVwb3J0IiwiaWF0IjoxNjE4OTYyMDk5LCJleHAiOjE2MTkwNDg0OTksImF6cCI6IjZGRGpZWHpxNEVzUzJ0NVpWQ1Y3YXJFWnVDMHEwSFBFIiwic2NvcGUiOiIiLCJwZXJtaXNzaW9ucyI6WyJlZGl0OndpbmUiLCJwb3N0OndpbmUiXX0.aOf1gSc7qU8uu9hu4OyuhiG8HkKK2Hb_CTZp86xMVVokfsQJjJXZO3ebR4BGPL6FeZ5Uk8Ixqk7yDSn8jq3t0vvWzYm1Q7wQlBJv0kN353wYhkROE2vHsSf_zxpVKdg5GfVPSvYR-t9IY8hLoJwAdnfYJc0ET-6QGeC5i9vUSmaYr76-yWOimAqL2hg-CvaLiku-mubo-Oh4UWX8J4W_pRwc1GBYxQ2VG9CIC2FKutQNtAgDvDkoh7TnN-gNa5MEP_-n60-V67oFrla0e9kVPwQ2oUUIVRNYrId5i4ROj-XLASY3gQwhf63wYbk17ZXzwOOQRZwfsOCQFCsJ-hPmCg"
 echo "USER_2_TOKEN: "$USER_2_TOKEN
 # set env to Development
-export APP_SETTINGS="config.ProductionConfig"
-# export APP_SETTINGS="config.TestingConfig"
+# export APP_SETTINGS="config.DevelopmentConfig"
+# export APP_SETTINGS="config.ProductionConfig"
+export APP_SETTINGS="config.TestingConfig"
 echo "APP_SETTINGS set to: "$APP_SETTINGS
 # The Auth0 callback url
 export AUTH0_CALLBACK_URL="http://127.0.0.1:5000/callback-url"
