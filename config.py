@@ -15,7 +15,7 @@ class Config(object):
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     SQLALCHEMY_BINDS = {
     'dev_db': os.environ['DATABASE_URL'],
-    'test_db':os.environ['TEST_DATABASE_URL']
+    'test_db': 'postgresql://localhost/wineport_test_db'
 }
 
 
@@ -38,7 +38,7 @@ class DevelopmentConfig(Config):
 
 class TestingConfig(Config):
     TESTING = True
-    SQLALCHEMY_DATABASE_URI = os.environ['TEST_DATABASE_URL']
+    SQLALCHEMY_DATABASE_URI = 'postgresql://localhost/wineport_test_db'
     DEBUG = False
 
 
