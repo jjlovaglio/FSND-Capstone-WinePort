@@ -1,10 +1,8 @@
 import os
 basedir = os.path.abspath(os.path.dirname(__file__))
 
-database_path = os.environ['DATABASE_URL']
 
-if database_path.startswith("postgres://"):
-    database_path = database_path.replace("postgres://", "postgresql://", 1)
+
 
 
 class Config(object):
@@ -22,6 +20,9 @@ class Config(object):
 class ProductionConfig(Config):
     DEVELOPMENT = False
     DEBUG = False
+    database_path = os.environ['DATABASE_URL']
+    if database_path.startswith("postgres://"):
+        database_path = database_path.replace("postgres://", "postgresql://", 1)
     SQLALCHEMY_DATABASE_URI = database_path
 
 
