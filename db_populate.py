@@ -1,4 +1,8 @@
-from run import db, Winery, Winemaker, Wine
+from os import environ as env
+from run import app, Winery, Winemaker, Wine, db
+
+
+
 
 # Populating Winemakers
 # ------------------------------------------------------------------------------------------------------------------

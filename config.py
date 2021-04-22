@@ -20,6 +20,7 @@ class Config(object):
 
 
 class ProductionConfig(Config):
+    DEVELOPMENT = False
     DEBUG = False
     SQLALCHEMY_DATABASE_URI = database_path
 

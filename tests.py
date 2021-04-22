@@ -1,8 +1,7 @@
 from os import environ as env
 import unittest
 import json
-from models import setup_db
-from run import app, generate_auth_url
+from run import app, generate_auth_url, setup_db
 from flask_sqlalchemy import SQLAlchemy
 
 class WinePortTestCase(unittest.TestCase):
